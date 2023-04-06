@@ -1,0 +1,93 @@
+# ASL Analysis via ASLprep using Docker Containers
+# This code/instruction manual was created by Jessica Archibald & Alex Weber in 2022
+
+# First, create a main folder to put all your BIDS and subject data in. For example:
+# Users/jessicaarchibald/NIprojects/ASL_MACCstudy
+
+# Step 1: Create the basic BIDS directory using dcm2bids_scaffold command
+# Move into your main folder, then run the following command:
+$ dcm2bids_scaffold
+
+# Step 2: Move the DICOM files for each subject into the sourcedata folder
+# Use the following command to move DICOM files for subject 001 into the sourcedata folder:
+$ mv /path/to/subject/dicom/files/* /path/to/sourcedata/sub-001
+
+# Step 3: Run dcm2bids_helper for one subject to get an idea of what the NIfTI files will be named and what the JSON files are like
+# For example, to run dcm2bids_helper for subject 01, use the following command:
+$ dcm2bids_helper -d sourcedata/sub-01/
+
+# Step 4: Create a configuration file (config.json) that specifies the data types and criteria for each modality
+# Here's an example configuration file:
+{
+    "descriptions": [
+        {
+            "dataType": "anat",
+            "modalityLabel": "T1w",
+            "criteria": {
+                "SidecarFilename": "3DT1"
+            }
+        },
+        {
+            "dataType": "perf",
+            "modalityLabel": "asl",
+            "criteria": {
+                "SidecarFilename": "SOURCE"
+            },
+            "sidecarChanges": {
+                "ArterialSpinLabelingType": "PCASL",
+                "PostLabelingDelay": 1.8,
+                "BackgroundSuppression": true,
+                "M0Type": "Included",
+                "RepetitionTimePreparation": 4.15728,
+                "LabelingDuration": 1.8
+            }
+        }
+    ]
+}
+
+# Step 5: Run dcm2bids for each subject
+# Use the following command to run dcm2bids for subject 01:
+$ dcm2bids -d sourcedata/sub-01/ -p 01 -c sourcedata/sub-01/config.json -o . --forceDcm2niix
+
+# Here, -d is the directory with the DICOM files, -p is the name you are giving this subject, -c is the path to the config file, -o is the output folder (main BIDS directory), and --forceDcm2niix is not necessary, but if you have run this once before, it will give an error saying these files already exist.
+
+# Step 6: Create a .tsv file called sub-<id>_aslcontext.tsv inside the sub-<id>/perf folder for each subject
+# This file should contain the volume types for each ASL volume. Here's an example:
+# volume_type
+# m0scan
+# m0scan
+# control
+# label
+# control
+# label
+# control
+# label
+# control
+# label
+
+#7. Get a Freesurfer license from https://surfer.nmr.mgh.harvard.edu/registration.html.
+
+#8. Create a working directory, NOT in your main BIDS folder
+#For example:
+#$ mkdir Users/jessicaarchibald/NIprojects/ASL_MACCstudy/wd_temp
+
+#9. Run ASLprep from docker:
+#Replace "/path/license.txt" with the path to your FreeSurfer license file, and "/path/to/wd_temp" with the path to the working directory you created in step 8.
+$ docker run -ti -m 12GB --rm
+-v /path/license.txt:/license/license.txt
+-v $PWD:/data:ro
+-v $PWD/derivatives:/out:rw
+-v /path/to/wd_temp:/work:rw
+pennlinc/aslprep /data /out participant --participant-label sub-001
+--fs-license /license/license.txt -w /work --output-spaces T1w
+
+#Note that the -m flag specifies the maximum memory to use in GB, and the --participant-label flag specifies the subject label you are analyzing.
+
+#10. After ASLprep finishes running, use FSL or other software to create a brain mask for the CBF map produced by ASLprep.
+
+#11. Run the "cbf_extraction.sh" script to extract CBF values from the CBF map for each ROI specified.
+
+
+#Note that you will need to replace "sub-001" with the appropriate subject label for each subject you analyze, and specify the path to your data files.
+
+And that's it! These steps should allow you to analyze ASL data using ASLprep and Docker containers.
