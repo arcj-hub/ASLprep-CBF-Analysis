@@ -16,4 +16,4 @@ Docker<br>
 Organize your data according to the BIDS standard.<br>
 Run ASLprep to preprocess your ASL data.<br>
 Use the asl_cbf_extraction.sh script to extract CBF values from specific brain regions of interest.<br>
-Use the Quality_aslprep.sh script to extracted QEI quality metrics from the html.<br>
+Use the Quality_aslprep.sh script to extract QEI quality metrics from the html.<br>
