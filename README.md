@@ -7,11 +7,12 @@ This repository contains a set of scripts to preprocess and analyze arterial spi
 ## Prerequisites
 The following software packages must be installed on your computer to run the scripts in this repository:
 
-ASLprep
-FSL
-Docker
+ASLprep<br>
+FSL<br>
+Docker<br>
 
 ## Usage
 Organize your data according to the BIDS standard.
 Run ASLprep to preprocess your ASL data.
 Use the asl_cbf_extraction.sh script to extract CBF values from specific brain regions of interest.
+Use the Quality_aslprep.sh script to extracted QEI quality metrics from the html.
