@@ -18,15 +18,15 @@ echo "Co-registering the Mask"
 # Loop through all files in the directory
 for FILE in *;
 do
-	# If the file name matches the masks you want to co-register
-	if [ $FILE == 'mask_ACC.nii' ] || [ $FILE =='mask_HCC.nii.gz' ] || [ $FILE == 'mask_MCC.nii.gz' ] || [ $FILE == 'mask_PCC.nii.gz' ];
-	then
-		# Use FLIRT to co-register the mask to the subject's CBF image in T1w space
-		# Replace "path/to/sub-0**_space-T1w_cbf.nii*" with the actual path to the subject's CBF image in T1w space
-		flirt -in $FILE -ref path/to/sub-0**_space-T1w_cbf.nii* -out resample_$FILE -applyxfm -usesqform
-	else
-		:
-	fi
+    # If the file name matches the masks you want to co-register
+    if [ "$FILE" == 'mask_ACC.nii.gz' ] || [ "$FILE" == 'mask_HCC.nii.gz' ] || [ "$FILE" == 'mask_MCC.nii.gz' ] || [ "$FILE" == 'mask_PCC.nii.gz' ];
+    then
+        # Use FLIRT to co-register the mask to the subject's CBF image in T1w space
+        # Replace "path/to/sub-001_space-T1w_cbf.nii*" with the actual path to the subject's CBF image in T1w space
+        flirt -in "$FILE" -ref sub-0**_space-T1w_cbf.nii* -out resample_"$FILE" -applyxfm -usesqform
+    else
+        :
+    fi
 done
 
 # Print the names of the files created
@@ -59,7 +59,7 @@ echo "Calculating CBF per Location"
 
 # Calculate CBF per location and append to the "cbf.txt" file
 # Replace "path/to/sub-0**_space-T1w_cbf.nii*" with the actual path to the subject's CBF image in T1w space
-fslstats path/to/sub-0**_space-T1w_cbf.nii* -k ./BIN/BIN_resample_mask_ACC.nii.gz -M >> cbf.txt
-fslstats path/to/sub-0**_space-T1w_cbf.nii* -k ./BIN/BIN_resample_mask_HCC.nii.gz -M >> cbf.txt
-fslstats path/to/sub-0**_space-T1w_cbf.nii* -k ./BIN/BIN_resample_mask_MCC.nii.gz -M >> cbf.txt
-fslstats path/to/sub-0**_space-T1w_cbf.nii* -k ./BIN/BIN_resample_mask_PCC.nii.gz -M >> cbf.txt
+fslstats sub-0**_space-T1w_cbf.nii* -k ./BIN/BIN_resample_mask_ACC.nii.gz -M >> cbf.txt
+fslstats sub-0**_space-T1w_cbf.nii* -k ./BIN/BIN_resample_mask_HCC.nii.gz -M >> cbf.txt
+fslstats sub-0**_space-T1w_cbf.nii* -k ./BIN/BIN_resample_mask_MCC.nii.gz -M >> cbf.txt
+fslstats sub-0**_space-T1w_cbf.nii* -k ./BIN/BIN_resample_mask_PCC.nii.gz -M >> cbf.txt
