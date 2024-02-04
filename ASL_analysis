@@ -73,13 +73,10 @@ $ dcm2bids -d sourcedata/sub-01/ -p 01 -c sourcedata/sub-01/config.json -o . --f
 
 #9. Run ASLprep from docker:
 #Replace "/path/license.txt" with the path to your FreeSurfer license file, and "/path/to/wd_temp" with the path to the working directory you created in step 8.
-$ docker run -ti -m 12GB --rm
--v /path/license.txt:/license/license.txt
--v $PWD:/data:ro
--v $PWD/derivatives:/out:rw
--v /path/to/wd_temp:/work:rw
-pennlinc/aslprep /data /out participant --participant-label sub-001
---fs-license /license/license.txt -w /work --output-spaces T1w
+
+$docker pull pennlinc/aslprep:0.6.0rc1
+
+$docker run -ti -m 12GB --rm -v /Users/jessicaarchibald/freesurfer/7.2.0/license.txt:/license/license.txt  -v $PWD:/data:ro -v $PWD/derivatives:/out:rw -v ~/Desktop/Projects_on_the_go/ASLtempWD:/work:rw pennlinc/aslprep:0.6.0rc1 /data /out  participant --participant-label sub-001 --fs-license /license/license.txt -w /work --output-spaces T1w --force-no-ge
 
 #Note that the -m flag specifies the maximum memory to use in GB, and the --participant-label flag specifies the subject label you are analyzing.
 
